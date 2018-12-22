@@ -22,11 +22,12 @@ $ flutter build ios --flavor prod
 ## Optional tools
 
 ### Launcher icons per platform / per flavor
-TODO
+
+See pending Pull Request on following project https://github.com/fluttercommunity/flutter_launcher_icons/pull/69
 
 ### Assets management per platform / per flavor
 
-In order to support different set of assets depending on platform and flavor parameters, see procedure in following project [https://github.com/sestegra/flutter_assets_flavors].
+In order to support different set of assets depending on platform and flavor parameters, see procedure in following project https://github.com/sestegra/flutter_assets_flavors.
 
 ## Usage
 ```
