@@ -9,6 +9,10 @@ In order to create a new Flutter project with 'dev' and 'prod' flavors, launch t
 $ flutter create <output directory> [arguments]
 $ cd <output directory>
 $ flutter-flavor enable dev prod
+```
+
+Then, use ``--flavor`` option with Flutter command.
+```
 $ flutter build apk --flavor dev
 $ flutter build apk --flavor prod
 $ flutter build ios --flavor dev
