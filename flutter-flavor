@@ -13,6 +13,7 @@ IOS_SCHEME_PATH=ios/Runner.xcodeproj/xcshareddata/xcschemes
 IOS_DEFAULT_SCHEME=Runner.xcscheme
 IOS_PROJECT=ios/Runner.xcodeproj/project.pbxproj
 IOS_ASSESTS_PATH=ios/Runner/Assets.xcassets
+IOS_INFO_PLIST_FILE=ios/Runner/Info.plist
 
 function _uuid() {
     uuidgen | sed s/-//g | cut -c -24
@@ -74,6 +75,10 @@ EOF
 function _flavorEnableIOS() {
     local flavor=$1
     echo "Enable flavors (iOS)"
+
+	echo "  Patch $IOS_INFO_PLIST_FILE"
+	local package=$(grep "name:" $PUBSPEC | cut -d':' -f2 | xargs)
+	sed -i "" "s/<string>$package<\/string>/<string>\$(bundle_name)<\/string>/" $IOS_INFO_PLIST_FILE
 
     echo "  Patch $IOS_PROJECT"
     patch -s -p1 << EOF
@@ -159,7 +164,7 @@ EOF
     rm -f $part
 
 	echo "  Create res directory"
-	mkdir -p ANDROID_SRC_PATH/$flavor
+	mkdir -p $ANDROID_SRC_PATH/$flavor
 	cp -r $ANDROID_SRC_PATH/main/res $ANDROID_SRC_PATH/$flavor
 }
 
@@ -201,6 +206,9 @@ function _addBuildConfigurationIOS() {
     local uuidReleaseTarget=$(_uuid)
     local uuidDebugProject=$(_uuid)
     local uuidDebugTarget=$(_uuid)
+
+	echo "    Read PRODUCT_BUNDLE_IDENTIFIER"
+	local bundle_id=$(grep -m1 PRODUCT_BUNDLE_IDENTIFIER $IOS_PROJECT | cut -d'=' -f2 | cut -d';' -f1 | xargs)
 
     echo "    Add $flavor files"
     _addFlutterFileIOS "Release-$flavor.xcconfig"
@@ -300,7 +308,7 @@ EOF
 					"\$(inherited)",
 					"\$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.flutterAssetsFlavors;
+				PRODUCT_BUNDLE_IDENTIFIER = $bundle_id.$flavor;
 				PRODUCT_NAME = "\$(TARGET_NAME)";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -378,7 +386,7 @@ EOF
 					"\$(inherited)",
 					"\$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.flutterAssetsFlavors;
+				PRODUCT_BUNDLE_IDENTIFIER = $bundle_id.$flavor;
 				PRODUCT_NAME = "\$(TARGET_NAME)";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -416,7 +424,6 @@ EOF
 
     echo "  Create $flavor.xcconfig configuration file"
     cat <<EOF > $IOS_FLUTTER_PATH/$flavor.xcconfig
-bundle_suffix = .$flavor
 bundle_name = $flavor
 EOF
 
@@ -424,7 +431,8 @@ EOF
     _addBuildConfigurationIOS $flavor
 
 	echo "  Create AppIcon-$flavor catalog"
-	cp -r $IOS_ASSESTS_PATH/AppIcon.appiconset $IOS_ASSESTS_PATH/AppIcon-$flavor.appiconset 
+	mkdir -p $IOS_ASSESTS_PATH/AppIcon-$flavor.appiconset
+	cp $IOS_ASSESTS_PATH/AppIcon.appiconset/* $IOS_ASSESTS_PATH/AppIcon-$flavor.appiconset 
 }
 
 function _flavorAdd() {

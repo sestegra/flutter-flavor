@@ -32,7 +32,7 @@ android {
 
 ## iOS flavor
 ### Configuration
-- Add `$(bundle_suffix)` after `$(PRODUCT_BUNDLE_IDENTIFIER)` in 
+- Replace `CFBundleName` value by `$(bundle_name)` in Info.plist
 - Open `ios/Runner.xcworkspace` with Xcode
 - In Xcode menu, select Product -> Scheme -> New Scheme entry to create new flavor
 - Create xcconfig file
@@ -48,7 +48,6 @@ android {
        ```
     3. Create `ios/Flutter/<flavor>.xcconfig` that contains
        ```
-       bundle_suffix = .<flavor>
        bundle_name = <flavor app name>
        ```
 - Add xcconfig files into the project
